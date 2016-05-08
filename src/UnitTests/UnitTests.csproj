@@ -97,8 +97,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseTestClass.cs" />
-    <Compile Include="Report\ReportTestClass.cs" />
+    <Compile Include="BaseTestFixture.cs" />
+    <Compile Include="Report\ReportTestFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
