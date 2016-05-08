@@ -1,0 +1,7 @@
+/db/
+/src/.vs/
+/src/packages/
+**/bin/
+**/obj/
+**/*.user
+**/*.suo
