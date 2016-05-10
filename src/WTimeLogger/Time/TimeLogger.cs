@@ -52,7 +52,7 @@ namespace WTimeLogger.Time
 			{
 				executable = title = "IDLE";
 			}
-			Logger.Log(title);
+			//Logger.Log(title);
 
 			try
 			{
@@ -87,6 +87,7 @@ namespace WTimeLogger.Time
 						};
 
 						_lastTitleTime.ID = Convert.ToInt64(dao.InsertWithIdentity(_lastTitleTime));
+						//_lastTitleTime.ID = ++index;
 					}
 				}
 			}
@@ -97,8 +98,14 @@ namespace WTimeLogger.Time
 				Application.Exit();
 			}
 
+			GC.Collect( 0, GCCollectionMode.Forced );
+			GC.Collect( 1, GCCollectionMode.Forced );
+			GC.Collect( 2, GCCollectionMode.Forced );
+			GC.Collect();
 			_timer.Start();
 		}
+
+		//private static long index = 0;
 
 		public void Dispose()
 		{

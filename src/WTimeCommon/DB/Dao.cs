@@ -15,16 +15,24 @@ namespace WTimeCommon.DB
 	{
 		public Dao() : base(GetDataProvider(), GetConnection())
 		{
+			//Logger.Log("Db File location: {0}; Working Folder: {1}", GetDbFileInfo().FullName, Directory.GetCurrentDirectory());
 		}
+
+		public static string CustomConnectionString { get; set; }
 
 		private static IDataProvider GetDataProvider()
 		{
 			return new LinqToDB.DataProvider.SQLite.SQLiteDataProvider();
 		}
 
+		public static string GetConnectionString()
+		{
+			return CustomConnectionString ?? ConfigurationManager.ConnectionStrings["WTimeLogger"].ConnectionString;
+		}
+
 		private static IDbConnection GetConnection()
 		{
-			return new SQLiteConnection(ConfigurationManager.ConnectionStrings["WTimeLogger"].ConnectionString);
+			return new SQLiteConnection(GetConnectionString());
 		}
 
 		public ITable<TitleTime> TitleTime
@@ -44,18 +52,24 @@ namespace WTimeCommon.DB
 		//	}
 		//}
 
+		public static FileInfo GetDbFileInfo()
+		{
+			var match = Regex.Match(GetConnectionString(), "Data Source=(.+?);");
+			return new FileInfo(match.Groups[1].Value);
+		}
+
 		public static void CreateDatabaseIfNotExists()
 		{
-			var connection = GetConnection();
-			var match = Regex.Match(connection.ConnectionString, "Data Source=(.+?);");
-			var dbFile = new FileInfo(match.Groups[1].Value);
+			var dbFile = GetDbFileInfo();
 			if (!dbFile.Exists || dbFile.Length == 0)
 			{
-				connection.Open();
-				try
+				using (var connection = GetConnection())
 				{
-					var command = connection.CreateCommand();
-					command.CommandText = @"
+					connection.Open();
+					try
+					{
+						var command = connection.CreateCommand();
+						command.CommandText = @"
 					CREATE TABLE TitleTime ( 
 						id            INTEGER          PRIMARY KEY AUTOINCREMENT
 													   NOT NULL
@@ -66,18 +80,19 @@ namespace WTimeCommon.DB
 						executable    VARCHAR( 1000 ) 
 					);
 				";
-					command.ExecuteNonQuery();
-				}
-				catch (Exception ex)
-				{
-					var message = "Could not create database infrastructure: " + ex.Message;
-					MessageBox.Show(message, "Error");
-					Logger.Log(message);
-					throw;
-				}
-				finally
-				{
-					connection.Close();
+						command.ExecuteNonQuery();
+					}
+					catch (Exception ex)
+					{
+						var message = "Could not create database infrastructure: " + ex.Message;
+						MessageBox.Show(message, "Error");
+						Logger.Log(message);
+						throw;
+					}
+					finally
+					{
+						connection.Close();
+					}
 				}
 			}
 		}

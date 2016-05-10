@@ -21,8 +21,6 @@ namespace WTimeLogger.Report
 					select p;
 
 				var list = query.ToArray();
-
-				var template = new Template(ResourceUtils.ReadStringFromEmbeddedResource("WTimeLogger.Report.reportTemplate.html"), '$', '$');
 				var executablesSummary = list.GroupBy(x => x.Executable)
 					.Select(
 						x => new TitleTime()
@@ -34,6 +32,9 @@ namespace WTimeLogger.Report
 					)
 					.Where(x => x.Duration.TotalMinutes > 1)
 					.OrderByDescending(x => x.Duration);
+
+
+				var template = new Template(ResourceUtils.ReadStringFromEmbeddedResource("WTimeLogger.Report.reportTemplate.html"), '$', '$');
 				template.Add("executables", executablesSummary);
 				var reportFile = @"C:\Desktop\report.html";
 				File.WriteAllText(reportFile, template.Render());

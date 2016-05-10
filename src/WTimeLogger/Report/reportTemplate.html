@@ -2,10 +2,20 @@
 <html>
 <head>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <style>
+        table.summary {
+            border-collapse: collapse; 
+            border: none;
+        }
+        table.summary > tbody > tr > td {
+            border: 1px solid gray;
+            padding: 3px;
+        }
+    </style>
 </head>
 
 <body>
-<table style="border-collapse: collapse; border: none;">
+<table class="summary">
     $executables:{it|
     <tr>
         <td>$it.Duration$</td>
