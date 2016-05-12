@@ -13,7 +13,21 @@ namespace WTimeCommon.DB
 {
 	public class Dao : LinqToDB.Data.DataConnection
 	{
-		public Dao() : base(GetDataProvider(), GetConnection())
+		private static readonly object _instanceLock = new object();
+		private static Dao _instance;
+
+		public static Dao Instance
+		{
+			get
+			{
+				lock (_instanceLock)
+				{
+					return _instance ?? (_instance = new Dao());
+				}
+			}
+		}
+
+		private Dao() : base(GetDataProvider(), GetConnection())
 		{
 			//Logger.Log("Db File location: {0}; Working Folder: {1}", GetDbFileInfo().FullName, Directory.GetCurrentDirectory());
 		}

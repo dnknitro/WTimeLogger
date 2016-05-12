@@ -13,33 +13,30 @@ namespace WTimeLogger.Report
 	{
 		public void GenerateHtmlReport(DateTime fromDateTime, DateTime toDateTime)
 		{
-			using (var dao = new Dao())
-			{
-				var query = from p in dao.TitleTime
-					where p.StartDateTime >= fromDateTime && p.StartDateTime < toDateTime
-					//orderby p.Title descending
-					select p;
+			var query = from p in Dao.Instance.TitleTime
+				where p.StartDateTime >= fromDateTime && p.StartDateTime < toDateTime
+				//orderby p.Title descending
+				select p;
 
-				var list = query.ToArray();
-				var executablesSummary = list.GroupBy(x => x.Executable)
-					.Select(
-						x => new TitleTime()
-						{
-							Executable = x.Key,
-							StartDateTime = DateTime.MinValue,
-							EndDateTime = DateTime.MinValue + TimeSpan.FromMilliseconds(x.Sum(z => z.Duration.TotalMilliseconds))
-						}
-					)
-					.Where(x => x.Duration.TotalMinutes > 1)
-					.OrderByDescending(x => x.Duration);
+			var list = query.ToArray();
+			var executablesSummary = list.GroupBy(x => x.Executable)
+				.Select(
+					x => new TitleTime()
+					{
+						Executable = x.Key,
+						StartDateTime = DateTime.MinValue,
+						EndDateTime = DateTime.MinValue + TimeSpan.FromMilliseconds(x.Sum(z => z.Duration.TotalMilliseconds))
+					}
+				)
+				.Where(x => x.Duration.TotalMinutes > 1)
+				.OrderByDescending(x => x.Duration);
 
 
-				var template = new Template(ResourceUtils.ReadStringFromEmbeddedResource("WTimeLogger.Report.reportTemplate.html"), '$', '$');
-				template.Add("executables", executablesSummary);
-				var reportFile = @"C:\Desktop\report.html";
-				File.WriteAllText(reportFile, template.Render());
-				Process.Start(reportFile);
-			}
+			var template = new Template(ResourceUtils.ReadStringFromEmbeddedResource("WTimeLogger.Report.reportTemplate.html"), '$', '$');
+			template.Add("executables", executablesSummary);
+			var reportFile = @"C:\Desktop\report.html";
+			File.WriteAllText(reportFile, template.Render());
+			Process.Start(reportFile);
 		}
 	}
 }

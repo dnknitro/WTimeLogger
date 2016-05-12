@@ -34,7 +34,19 @@ namespace WTimeLogger
 
 			trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
 
-			var reportMenuItem = new ToolStripMenuItem("Report: Today");
+			var reportMenuItem = new ToolStripMenuItem("Report");
+			reportMenuItem.Click += (sender, args) =>
+			{
+				using (var form = new PickDateRangeForm())
+				{
+					form.ShowDialog();
+					if (form.DialogResult == DialogResult.OK)
+						new TimeReporter().GenerateHtmlReport(form.From.Date, form.To.Date.AddDays(1));
+				}
+			};
+			trayIcon.ContextMenuStrip.Items.Add(reportMenuItem);
+
+			reportMenuItem = new ToolStripMenuItem("Report: Today");
 			reportMenuItem.Click += (sender, args) => new TimeReporter().GenerateHtmlReport(DateTime.Now.Date, DateTime.Now.Date.AddDays(1));
 			trayIcon.ContextMenuStrip.Items.Add(reportMenuItem);
 		}

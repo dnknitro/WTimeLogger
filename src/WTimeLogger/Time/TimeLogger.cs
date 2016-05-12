@@ -69,26 +69,24 @@ namespace WTimeLogger.Time
 					startDateTime = previousTitleTime.EndDateTime;
 				}
 
-				using (var dao = new Dao())
-				{
-					if (previousTitleTime?.Title == title)
-					{
-						previousTitleTime.EndDateTime = now;
-						dao.Update(previousTitleTime);
-					}
-					else
-					{
-						_lastTitleTime = new TitleTime
-						{
-							Title = title,
-							Executable = executable,
-							StartDateTime = startDateTime,
-							EndDateTime = now
-						};
 
-						_lastTitleTime.ID = Convert.ToInt64(dao.InsertWithIdentity(_lastTitleTime));
-						//_lastTitleTime.ID = ++index;
-					}
+				if (previousTitleTime?.Title == title)
+				{
+					previousTitleTime.EndDateTime = now;
+					Dao.Instance.Update(previousTitleTime);
+				}
+				else
+				{
+					_lastTitleTime = new TitleTime
+					{
+						Title = title,
+						Executable = executable,
+						StartDateTime = startDateTime,
+						EndDateTime = now
+					};
+
+					_lastTitleTime.ID = Convert.ToInt64(Dao.Instance.InsertWithIdentity(_lastTitleTime));
+					//_lastTitleTime.ID = ++index;
 				}
 			}
 			catch (Exception ex)
@@ -98,9 +96,9 @@ namespace WTimeLogger.Time
 				Application.Exit();
 			}
 
-			GC.Collect( 0, GCCollectionMode.Forced );
-			GC.Collect( 1, GCCollectionMode.Forced );
-			GC.Collect( 2, GCCollectionMode.Forced );
+			GC.Collect(0, GCCollectionMode.Forced);
+			GC.Collect(1, GCCollectionMode.Forced);
+			GC.Collect(2, GCCollectionMode.Forced);
 			GC.Collect();
 			_timer.Start();
 		}
