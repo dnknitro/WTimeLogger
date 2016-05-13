@@ -1,27 +1,86 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
-    <style>
-        table.summary {
-            border-collapse: collapse; 
-            border: none;
-        }
-        table.summary > tbody > tr > td {
-            border: 1px solid gray;
-            padding: 3px;
-        }
-    </style>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+	<style>
+		table.summary {
+			border-collapse: collapse;
+			border: none;
+		}
+		table.summary > tbody > tr > td {
+			border: 1px solid gray;
+			padding: 3px;
+		}
+	</style>
 </head>
 
 <body>
+<script>
+	var data =
+	{
+		startTime: "$startTime$",
+		endTime: "$endTime$",
+		totalDurationSec: $totalDurationSec$,
+		timeSpans: [
+			$timeSpans:{it|
+			{
+				diffSec: $it.diffSec$,
+				durationSec: $it.durationSec$,
+				description: "$it.description$",
+				color: "$it.color$",
+				colorInverted: "$it.colorInverted$"
+			\},
+			}$
+		]
+	};
+</script>
+
+<script>
+	var width = window.innerWidth - 50;
+	var height = 200;
+
+	var canvas = document.createElement('canvas');
+	canvas.id = "timeSpans";
+	canvas.width = width;
+	canvas.height = height;
+	document.body.appendChild(canvas);
+
+	var context = canvas.getContext('2d');
+
+	//canvas border
+	context.rect(0, 0, width, height);
+	context.stroke();
+
+	var secondsInOnePixel = width / data.totalDurationSec;
+	console.log('secondsInOnePixel');
+	console.log(secondsInOnePixel);
+
+	var yText = 10;
+
+	for (var i = 0; i < data.timeSpans.length; i ++) {
+		console.log("i=" + i);
+		context.beginPath();
+		var x = data.timeSpans[i].diffSec * secondsInOnePixel;
+		var xWidth = data.timeSpans[i].durationSec * secondsInOnePixel;
+		console.log(x);
+		console.log(xWidth);
+		context.rect(x, 1, xWidth, height - 1);
+		context.fillStyle = data.timeSpans[i].color;
+		context.fill();
+		context.strokeStyle = data.timeSpans[i].colorInverted;
+		context.strokeText(data.timeSpans[i].description, x + 1, yText);
+		yText += 15;
+		if (yText > height - 10) yText = 10;
+		context.stroke();
+	}
+</script>
 <table class="summary">
-    $executables:{it|
-    <tr>
-        <td>$it.Duration$</td>
-        <td>$it.Executable$</td>
-    </tr>
-    }$
+	$executables:{it|
+	<tr>
+		<td>$it.Duration$</td>
+		<td>$it.Executable$</td>
+	</tr>
+	}$
 </table>
 </body>
 </html>

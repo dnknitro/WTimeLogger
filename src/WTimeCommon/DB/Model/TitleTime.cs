@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using LinqToDB.Mapping;
 
 namespace WTimeCommon.DB.Model
@@ -14,6 +15,8 @@ namespace WTimeCommon.DB.Model
 
 		[Column(Name = "executable"), NotNull]
 		public string Executable { get; set; }
+
+		public string ExecutableName => new FileInfo(Executable).Name;
 
 		[Column(Name = "startDateTime"), NotNull]
 		public DateTime StartDateTime { get; set; }

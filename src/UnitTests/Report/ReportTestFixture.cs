@@ -9,7 +9,8 @@ namespace UnitTests.Report
 		[Test]
 		public void GenerateHtmlReportTest()
 		{
-			new TimeReporter().GenerateHtmlReport(DateTime.Now.Date.AddDays(-7), DateTime.Now);
+			var fromDateTime = DateTime.Parse("05/05/2016");
+			new TimeReporter().GenerateHtmlReport(fromDateTime, fromDateTime.AddDays(1));
 		}
 	}
 }
