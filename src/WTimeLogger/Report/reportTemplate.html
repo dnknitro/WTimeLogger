@@ -7,9 +7,24 @@
 			border-collapse: collapse;
 			border: none;
 		}
-		table.summary > tbody > tr > td {
+
+			table.summary > tbody > tr > td {
+				border: 1px solid gray;
+				padding: 3px;
+			}
+
+		#divs {
+			height: 70px;
 			border: 1px solid gray;
-			padding: 3px;
+			margin-bottom: 5px;
+			clear: both;
+		}
+
+		#divs > div {
+			border: 1px solid gray;
+			float: left;
+			overflow: hidden;
+			height: 68px;
 		}
 	</style>
 </head>
@@ -18,12 +33,12 @@
 <script>
 	var data =
 	{
-		startTime: "$startTime$",
-		endTime: "$endTime$",
 		totalDurationSec: $totalDurationSec$,
 		timeSpans: [
 			$timeSpans:{it|
 			{
+				startedStr: "$it.startedStr$",
+				durationStr: "$it.durationStr$",
 				diffSec: $it.diffSec$,
 				durationSec: $it.durationSec$,
 				description: "$it.description$",
@@ -35,43 +50,76 @@
 	};
 </script>
 
+<div style="float: left;">$startTime$</div>
+<div style="float: right;">$endTime$</div>
+
 <script>
 	var width = window.innerWidth - 50;
-	var height = 200;
+	var height = 100;
 
-	var canvas = document.createElement('canvas');
-	canvas.id = "timeSpans";
-	canvas.width = width;
-	canvas.height = height;
-	document.body.appendChild(canvas);
+	//var canvas = document.createElement('canvas');
+	//canvas.id = "timeSpans";
+	//canvas.width = width;
+	//canvas.height = height;
+	//document.body.appendChild(canvas);
 
-	var context = canvas.getContext('2d');
+	//var context = canvas.getContext('2d');
 
-	//canvas border
-	context.rect(0, 0, width, height);
-	context.stroke();
+	////canvas border
+	//context.rect(0, 0, width, height);
+	//context.stroke();
 
+	//var secondsInOnePixel = width / data.totalDurationSec;
+	//console.log('secondsInOnePixel');
+	//console.log(secondsInOnePixel);
+
+	//var yText = 10;
+
+	//for (var i = 0; i < data.timeSpans.length; i ++) {
+	//	console.log("i=" + i);
+	//	context.beginPath();
+	//	var x = data.timeSpans[i].diffSec * secondsInOnePixel;
+	//	var xWidth = data.timeSpans[i].durationSec * secondsInOnePixel;
+	//	console.log(x);
+	//	console.log(xWidth);
+	//	context.rect(x, 1, xWidth, height - 1);
+	//	context.fillStyle = data.timeSpans[i].color;
+	//	context.fill();
+	//	context.strokeStyle = data.timeSpans[i].colorInverted;
+	//	context.strokeText(data.timeSpans[i].description, x + 1, yText);
+	//	yText += 15;
+	//	if (yText > height - 10) yText = 10;
+	//	context.stroke();
+	//}
+
+
+	var divs = document.createElement('div');
+	divs.id = "divs";
+	document.body.appendChild(divs);
+	
 	var secondsInOnePixel = width / data.totalDurationSec;
-	console.log('secondsInOnePixel');
-	console.log(secondsInOnePixel);
+	var previousDiv = null;
+	var previousXplusWidth = null;
+	
+	for (var i = 0; i < data.timeSpans.length; i ++)
+	{
+		var timeSpan = data.timeSpans[i];
+		var x = Math.round(timeSpan.diffSec * secondsInOnePixel);
+		var xWidth = Math.round(timeSpan.durationSec * secondsInOnePixel) - 1;
 
-	var yText = 10;
-
-	for (var i = 0; i < data.timeSpans.length; i ++) {
-		console.log("i=" + i);
-		context.beginPath();
-		var x = data.timeSpans[i].diffSec * secondsInOnePixel;
-		var xWidth = data.timeSpans[i].durationSec * secondsInOnePixel;
-		console.log(x);
-		console.log(xWidth);
-		context.rect(x, 1, xWidth, height - 1);
-		context.fillStyle = data.timeSpans[i].color;
-		context.fill();
-		context.strokeStyle = data.timeSpans[i].colorInverted;
-		context.strokeText(data.timeSpans[i].description, x + 1, yText);
-		yText += 15;
-		if (yText > height - 10) yText = 10;
-		context.stroke();
+		var div = document.createElement('div');
+		var style = "width: "+xWidth+"px; color: "+timeSpan.colorInverted+"; background-color: "+timeSpan.color+";";
+		if(previousDiv != null)
+		{
+			style = style + "margin-right: "+(x - previousXplusWidth)+"px;";
+		}
+		div.setAttribute("style", style);
+		div.setAttribute("title", timeSpan.description + "; from " + timeSpan.startedStr + " for " + timeSpan.durationStr);
+		div.innerHTML = timeSpan.description;
+		divs.appendChild(div);
+		
+		previousDiv = div;
+		previousXplusWidth = x + xWidth;
 	}
 </script>
 <table class="summary">

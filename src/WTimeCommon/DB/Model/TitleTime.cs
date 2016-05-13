@@ -24,6 +24,6 @@ namespace WTimeCommon.DB.Model
 		[Column(Name = "endDateTime"), NotNull]
 		public DateTime EndDateTime { get; set; }
 
-		public TimeSpan Duration => EndDateTime - StartDateTime;
+		public TimeSpan Duration => EndDateTime > StartDateTime ? EndDateTime - StartDateTime : StartDateTime - EndDateTime;
 	}
 }

@@ -12,5 +12,17 @@ namespace WTimeLogger.Report
 
 		public DateTime From => dateTimePickerFrom.Value.Date;
 		public DateTime To => dateTimePickerTo.Value.Date;
+
+		private void buttonLeft_Click( object sender, EventArgs e )
+		{
+			dateTimePickerFrom.Value = dateTimePickerFrom.Value.AddDays(-1);
+			dateTimePickerTo.Value = dateTimePickerTo.Value.AddDays(-1);
+		}
+
+		private void buttonRight_Click( object sender, EventArgs e )
+		{
+			dateTimePickerFrom.Value = dateTimePickerFrom.Value.AddDays(1);
+			dateTimePickerTo.Value = dateTimePickerTo.Value.AddDays(1);
+		}
 	}
 }

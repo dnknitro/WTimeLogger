@@ -39,7 +39,8 @@ namespace WTimeLogger.Report
 						}
 					)
 					.Where(x => x.Duration.TotalMinutes > 1)
-					.OrderByDescending(x => x.Duration);
+					.OrderByDescending(x => x.Duration)
+					.ToList();
 				template.Add("executables", executablesSummary);
 			}
 
@@ -57,13 +58,15 @@ namespace WTimeLogger.Report
 					.OrderBy(x => x.StartDateTime)
 					.Select(x => new
 					{
+						startedStr = x.StartDateTime.ToString(),
+						durationStr = x.Duration.ToString(),
 						diffSec = (x.StartDateTime - minDateTime).TotalSeconds,
 						durationSec = (x.EndDateTime - x.StartDateTime).TotalSeconds,
 						description = x.ExecutableName,
 						color = colors[x.ExecutableName],
 						colorInverted = ColorsHelper.InvertHexColor(colors[x.ExecutableName])
 					})
-					.Where(x => x.durationSec > 200);
+					.Where(x => x.durationSec > 120);
 
 				template.Add("timeSpans", timeSpans);
 			}
